@@ -1,0 +1,6 @@
+playwright
+requests
+urllib3
+tls_client
+pandas
+python-dotenv

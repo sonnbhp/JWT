@@ -36,6 +36,8 @@ logging.basicConfig(
 logger = logging.getLogger("GnocAuto")
 
 class GnocAutomationPipeline:
+    VERSION = "2.1"
+    
     def __init__(self):
         self.config = self._load_config()
         self.jwt_token = None
@@ -271,7 +273,8 @@ class GnocAutomationPipeline:
             else: normal.append(r)
 
         # Xây dựng nội dung tin nhắn
-        msg = [f"📡 **BÁO CÁO SR TRUYỀN DẪN KV1 (DỮ LIỆU MỚI NHẤT)**\n"]
+        msg = [f"📡 **BÁO CÁO SR TRUYỀN DẪN KV1 (DỮ LIỆU MỚI NHẤT)**"]
+        msg.append(f"📦 Phiên bản: **v{self.VERSION}**")
         msg.append(f"🕒 {now.strftime('%H:%M %d/%m/%Y')}\nTháng hiện tại: **{month_now}**\n")
         msg.append(f"Tổng SR đang mở: **{len(overdue) + len(warning) + len(normal) + len(unapproved)}**")
         msg.append(f"🟡 Chưa duyệt: **{len(unapproved)}** | 🟠 Sắp quá hạn: **{len(warning)}** | 🔴 Quá hạn: **{len(overdue)}**\n")

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "leankg": {
+      "args": [
+        "mcp-stdio",
+        "--watch"
+      ],
+      "command": "/Users/sonnbhp/.local/bin/leankg"
+    }
+  }
+}

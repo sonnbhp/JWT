@@ -1,0 +1,21 @@
+{
+  "name": "jwt",
+  "version": "1.0.0",
+  "description": "Hệ thống tự động hóa việc lấy dữ liệu Service Request (SR) từ GNOC Viettel, phân tích và gửi báo cáo thông minh lên NetChat.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonnbhp/JWT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sonnbhp/JWT/issues"
+  },
+  "homepage": "https://github.com/sonnbhp/JWT#readme"
+}
