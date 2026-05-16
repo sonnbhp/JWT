@@ -1,0 +1,18 @@
+# Dữ liệu nhạy cảm
+config.json
+gnoc_token.txt
+
+# Dữ liệu trình duyệt và cache
+browser_profile/
+__pycache__/
+*.pyc
+
+# Dữ liệu tạm/kết quả
+sr_raw_all.json
+sr_clean_all.json
+sr_raw.json
+sr_clean.json
+
+# Hệ thống
+.DS_Store
+Thumbs.db
