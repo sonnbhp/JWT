@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import sys
 import urllib.request
 import urllib.error
 from playwright.sync_api import sync_playwright
@@ -50,15 +51,30 @@ class GnocLoginTool:
                     f.write(token)
 
     def login_and_get_token(self, headless=True):
-        with sync_playwright() as p:
-            log("Khởi động trình duyệt...", "🚀")
-            browser_ctx = p.chromium.launch_persistent_context(
-                user_data_dir=PROFILE_DIR,
-                channel="chrome",
-                headless=headless,
-                ignore_https_errors=True,
-                args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
-            )
+            # Tự động tìm đường dẫn Chrome xịn trên Windows
+            chrome_path = None
+            if getattr(sys, 'frozen', False):
+                possible_paths = [
+                    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                    r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+                    os.path.expanduser(r"~\AppData\Local\Google\Chrome\Application\chrome.exe")
+                ]
+                for p_path in possible_paths:
+                    if os.path.exists(p_path):
+                        chrome_path = p_path
+                        break
+
+            launch_args = {
+                "user_data_dir": PROFILE_DIR,
+                "headless": headless,
+                "args": ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+            }
+            if chrome_path:
+                launch_args["executable_path"] = chrome_path
+            else:
+                launch_args["channel"] = "chrome"
+
+            browser_ctx = p.chromium.launch_persistent_context(**launch_args)
             try:
                 page = browser_ctx.pages[0] if browser_ctx.pages else browser_ctx.new_page()
                 page.on("request", self.capture_jwt_handler)

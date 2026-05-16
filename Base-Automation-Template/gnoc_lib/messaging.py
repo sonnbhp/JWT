@@ -1,4 +1,4 @@
-import tls_client
+import requests
 import json
 from .common import log
 
@@ -8,7 +8,8 @@ class NetChatClient:
     def __init__(self, token, channel_id):
         self.token = token
         self.channel_id = channel_id
-        self.session = tls_client.Session(client_identifier="chrome120")
+        self.session = requests.Session()
+        self.session.verify = False
 
     def send_message(self, message):
         headers = {

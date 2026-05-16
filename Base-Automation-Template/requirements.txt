@@ -1,6 +1,4 @@
-playwright
 requests
+playwright
 urllib3
-tls_client
-pandas
-python-dotenv
+pyinstaller

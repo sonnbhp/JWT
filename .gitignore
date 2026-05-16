@@ -16,3 +16,9 @@ sr_clean.json
 # Hệ thống
 .DS_Store
 Thumbs.db
+*.log
+dist/
+build/
+*.spec
+.leankg/
+.claude/

@@ -1,13 +1,13 @@
 import os
 import json
 import time
+import sys
 import ssl
 import logging
 import urllib.request
 import urllib.error
 import requests
 import urllib3
-import tls_client
 from datetime import datetime, timezone, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -17,26 +17,36 @@ SSL_CTX = ssl.create_default_context()
 SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
-# --- ĐỊNH NGHĨA ĐƯỜNG DẪN ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# --- ĐỊNH NGHĨA ĐƯỜNG DẪN (Hỗ trợ đóng gói EXE) ---
+import sys
+if getattr(sys, 'frozen', False):
+    # Nếu chạy từ file .EXE
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Nếu chạy từ file .py thông thường
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
 TOKEN_FILE = os.path.join(BASE_DIR, "gnoc_token.txt")
 LOG_FILE = os.path.join(BASE_DIR, "gnoc_auto.log")
 PROFILE_DIR = os.path.expanduser("~/.gnoc_browser_profile")
 
 # --- CẤU HÌNH LOGGING ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger("GnocAuto")
+try:
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        handlers=[
+            logging.FileHandler(LOG_FILE, encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
+    logger = logging.getLogger("GnocAuto")
+except Exception as e:
+    print(f"[LOI] Khong the khoi tao Logging: {e}")
 
 class GnocAutomationPipeline:
-    VERSION = "2.1"
+    VERSION = "2.2"
     
     def __init__(self):
         self.config = self._load_config()
@@ -44,6 +54,15 @@ class GnocAutomationPipeline:
         self.gnoc_url = "https://gnoc.viettel.vn:9000/"
         self.sr_api_url = "https://gnoc.viettel.vn:9003/sr-service/SR/getListSR"
         self.netchat_url = "https://netchat.viettel.vn/api/v4/posts"
+        
+        # Sử dụng requests Session tiêu chuẩn
+        self.session = requests.Session()
+        self.session.verify = False
+        self.session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+        })
 
     def _load_config(self):
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -324,7 +343,8 @@ class GnocAutomationPipeline:
 
         # Gửi NetChat
         try:
-            session = tls_client.Session(client_identifier="chrome_112")
+            session = requests.Session()
+            session.verify = False
             headers = {"Authorization": f"Bearer {self.config['netchat_token']}", "Content-Type": "application/json"}
             payload = {"channel_id": self.config['netchat_channel_id'], "message": "\n".join(msg)}
             res = session.post(self.netchat_url, headers=headers, json=payload)
@@ -358,4 +378,10 @@ class GnocAutomationPipeline:
         logger.info("🏁 Quy trình kết thúc.\n" + "="*40)
 
 if __name__ == "__main__":
-    GnocAutomationPipeline().run()
+    try:
+        GnocAutomationPipeline().run()
+    except Exception as e:
+        print(f"LOI KHONG XAC DINH: {e}")
+    finally:
+        print("\n" + "="*40)
+        input("👉 Nhấn Enter để kết thúc và đóng cửa sổ này...")
